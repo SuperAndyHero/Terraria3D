@@ -1,0 +1,112 @@
+{
+	"name": "Default",
+	"author": "MattThompson",
+
+	"layers":
+	[
+		{
+			"name": "Background",
+			"zPos": 4,
+			"depth": 4,
+			"renderFunctions":
+			[
+				"Black",
+				"BackgroundWater",
+				"SceneBackground",
+				"Walls"
+			]
+		},
+		{
+			"name": "Solid Tiles",
+			"depth": 32,
+			"inputPlane": "SolidTiles",
+			"renderFunctions":
+			[
+				"SolidTiles",
+				"DrawTiles"
+			]
+	},
+		{
+			"name": "Non Solid Tiles",
+			"depth": 8,
+			"inputPlane": "NonSolidTiles",
+			"renderFunctions":
+			[
+				"NonSolidTiles",
+				"WaterFalls"
+			]
+		},
+		{
+			"name": "Characters",
+			"zPos": -18,
+			"depth": 6,
+			"noise": 0,
+			"renderFunctions":
+			[
+				"MoonMoon",
+				"NPCsBehindTiles",
+				"DrawCacheWorm",
+				"WallOfFlesh",
+				"NPCsBehindNonSoldTiles",
+				"NPCsInfrontOfTiles",
+				"Players",
+				"NPCsOverPlayer"
+			]
+		},
+		{
+			"name": "Projectiles",
+			"zPos": -20,
+			"depth": 2,
+			"noise": 0,
+			"renderFunctions":
+			[
+				"ProjsBehindNPCsAndTiles",
+				"ProjsBehindNPCs",
+				"ProjsBehindProjectiles",
+				"Projectiles",
+				"InfernoRings",
+				"ProjsOverWireUI",
+				"NPCProjectiles"
+			]
+		},
+		{
+			"name": "Gore - Weather - Items",
+			"zPos": -12,
+			"depth": 6,
+			"noise": 0,
+			"renderFunctions":
+			[
+				"GoreBehind",
+				"Gore",
+				"Dust",
+				"Rain",
+				"Sandstorm",
+				"MoonLordDeath",
+				"MoonlordDeathFront",
+				"Items"
+			]
+		},
+		{
+			"name": "Water Foreground",
+			"depth": 32,
+			"renderFunctions":
+			[
+				"ForegroundWater"
+			]
+		},
+		{
+			"name": "Wires - UI",
+			"zPos": -32,
+			"depth": 4,
+			"renderFunctions":
+			[
+				"Wires",
+				"HitTileAnimation",
+				"ItemText",
+				"CombatText",
+				"ChatOverPlayerHeads",
+				"GameInterfaces"
+			]
+		}
+	]
+}

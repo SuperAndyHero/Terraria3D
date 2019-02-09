@@ -30,8 +30,8 @@ namespace Terraria3D
         }
 
         // Drawing
-        public void RenderLayersTargets() => Scene.RenderLayers(LayerManager.Layers);
-        public void DrawScene() => Scene.DrawToScreen(LayerManager.Layers);
+        public void RenderLayersTargets() => Scene.RenderLayers(LayerManager.LayerConfig.Layers);
+        public void DrawScene() => Scene.DrawToScreen(LayerManager.LayerConfig.Layers);
 
         // UI
         public override void UpdateUI(GameTime gameTime)

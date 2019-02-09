@@ -70,7 +70,7 @@ namespace Terraria3D
         {
             None,
             SolidTiles,
-            NoneSolidTiles,
+            NonSolidTiles,
         }
     }
 }

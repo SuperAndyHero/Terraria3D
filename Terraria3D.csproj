@@ -46,6 +46,7 @@
     <Compile Include="Hooks\WaterHooks.cs" />
     <Compile Include="Input\Cursor3D.cs" />
     <Compile Include="Input\InputTerraria3D.cs" />
+    <Compile Include="LayerConfigImporting\JsonLayerConfig.cs" />
     <Compile Include="LayerConfigImporting\RenderFunctionMap.cs" />
     <Compile Include="Rendering\CapRenderer.cs" />
     <Compile Include="Geometry\PixelGrid.cs" />
@@ -59,8 +60,8 @@
     <Compile Include="Rendering\InnerPixelRenderer.cs" />
     <Compile Include="Rendering\Renderers.cs" />
     <Compile Include="Rendering\Rendering.cs" />
+    <Compile Include="Scene\LayerConfig.cs" />
     <Compile Include="Scene\LayerManager.cs" />
-    <Compile Include="Scene\LayersBuilder.cs" />
     <Compile Include="Scene\Scene3D.cs" />
     <Compile Include="Scene\TileOverrides.cs" />
     <Compile Include="Terraria3D.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="UI\UserInterfaces\UserInterfaceOverlay.cs" />
     <Compile Include="UI\UserInterfaces\UserInterfaceSettings.cs" />
     <Compile Include="LayerConfigImporting\LayerConfigImporter.cs" />
+    <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\Loading.cs" />
     <Compile Include="Utils\Utils.cs" />
   </ItemGroup>
@@ -132,10 +134,7 @@
     <Content Include="Effects\Texture.fx" />
     <Content Include="Images\Noise.png" />
     <Content Include="Images\Player.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="IncludedLayerConfigs\Default.json" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

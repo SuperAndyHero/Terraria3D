@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -7,135 +6,44 @@ namespace Terraria3D
 {
 	public static class LayerConfigImporter
 	{
-		private static string defaultLayersJson = @"
-[
-	{
-		'name': 'Background',
-		'zPos': 4,
-		'depth': 4,
-		'renderFunctions':
-		[
-			'Black',
-			'BackgroundWater',
-			'SceneBackground',
-			'Walls'
-		]
-	},
-	{
-		'name': 'Solid Tiles',
-		'depth': 32,
-		'inputPlane': 'SolidTiles',
-		'renderFunctions':
-		[
-			'SolidTiles',
-			'DrawTiles'
-		]
-},
-	{
-		'name': 'Non Solid Tiles',
-		'depth': 8,
-		'inputPlane': 'NonSolidTiles',
-		'renderFunctions':
-		[
-			'NonSolidTiles',
-			'WaterFalls'
-		]
-	},
-	{
-		'name': 'Characters',
-		'zPos': -18,
-		'depth': 6,
-		'noise': 0,
-		'renderFunctions':
-		[
-			'MoonMoon',
-			'NPCsBehindTiles',
-			'DrawCacheWorm',
-			'WallOfFlesh',
-			'NPCsBehindNonSoldTiles',
-			'NPCsInfrontOfTiles',
-			'Players',
-			'NPCsOverPlayer'
-		]
-	},
-	{
-		'name': 'Projectiles',
-		'zPos': -20,
-		'depth': 2,
-		'noise': 0,
-		'renderFunctions':
-		[
-			'ProjsBehindNPCsAndTiles',
-			'ProjsBehindNPCs',
-			'ProjsBehindProjectiles',
-			'Projectiles',
-			'InfernoRings',
-			'ProjsOverWireUI',
-			'NPCProjectiles'
-		]
-	},
-	{
-		'name': 'Gore - Weather - Items',
-		'zPos': -12,
-		'depth': 6,
-		'noise': 0,
-		'renderFunctions':
-		[
-			'GoreBehind',
-			'Gore',
-			'Dust',
-			'Rain',
-			'Sandstorm',
-			'MoonLordDeath',
-			'MoonlordDeathFront',
-			'Items'
-		]
-	},
-	{
-		'name': 'Water Foreground',
-		'depth': 32,
-		'renderFunctions':
-		[
-			'ForegroundWater'
-		]
-	},
-	{
-		'name': 'Wires - UI',
-		'zPos': -32,
-		'depth': 4,
-		'renderFunctions':
-		[
-			'Wires',
-			'HitTileAnimation',
-			'ItemText',
-			'CombatText',
-			'ChatOverPlayerHeads',
-			'GameInterfaces'
-		]
-	}
-]
-";
-		
-		public static Layer3D[] GetDefaultLayers()
+
+		public static LayerConfig GetDefaultConfig()
+		{
+			var json = FileUtils.GetTextFile("IncludedLayerConfigs/Default.json");
+			return ImportLayerConfig(json);
+		}
+
+		public static LayerConfig ImportLayerConfig(string json)
 		{
 			try
 			{
-				var jsonLayers = GetJsonLayers(defaultLayersJson);
-				var result = new Layer3D[jsonLayers.Length];
-				for (int i = 0; i < jsonLayers.Length; i++)
-					result[i] = JsonLayerToLayer3D(jsonLayers[i]);
+				var config = GetJsonLayerConfig(json);
+				var result = new LayerConfig()
+				{
+					Name = config.Name,
+					Author = config.Author,
+					Layers = GetLayersFromJsonLayers(config.Layers)
+				};
 				return result;
 			}
-			catch(JsonSerializationException exception)
+			catch (JsonSerializationException exception)
 			{
-				Console.WriteLine(exception.Message);
+				throw exception;
+				//Console.WriteLine(exception.Message);
 			}
-			return null;
 		}
 
-		public static JsonLayer[] GetJsonLayers(string json)
-			=> JsonConvert.DeserializeObject<JsonLayer[]>(json);
-		
+		public static Layer3D[] GetLayersFromJsonLayers(JsonLayer[] jsonLayers)
+		{
+			var result = new Layer3D[jsonLayers.Length];
+			for (int i = 0; i < jsonLayers.Length; i++)
+				result[i] = JsonLayerToLayer3D(jsonLayers[i]);
+			return result;
+		}
+
+		public static JsonLayerConfig GetJsonLayerConfig(string json)
+			=> JsonConvert.DeserializeObject<JsonLayerConfig>(json);
+
 		private static Layer3D JsonLayerToLayer3D(JsonLayer jl)
 		{
 			var result = new Layer3D()
@@ -165,18 +73,5 @@ namespace Terraria3D
 				throw new Exception(string.Format("Could not find render function '{0}'", functionName));
 			return RenderFunctionMap.Map[functionName];
 		}
-	}
-
-	public class JsonLayer
-	{
-		public string Name { get; set; } = "Un-named";
-		public float Depth { get; set; } = 0;
-		public float ZPos { get; set; } = 16;
-		public float Noise { get; set; } = 1;
-		public bool InnerPixel { get; set; } = true;
-		public Layer3D.InputPlaneType InputPlane { get; set; } = Layer3D.InputPlaneType.None;
-
-		public string[] RenderFunctions { get; set; }
-		public string[] TileOverrides { get; set; }
 	}
 }

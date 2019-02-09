@@ -44,7 +44,7 @@ namespace Terraria3D
         private void RebuildLayerList()
         {
             _scrollView.List.Clear();
-            var layers = Terraria3D.Instance.LayerManager.Layers;
+            var layers = Terraria3D.Instance.LayerManager.LayerConfig.Layers;
             for (int i = 0; i < layers.Length; i++)
                 _scrollView.List.Add(new UILayerEntry(i) { Layer = layers[i] }); 
         }

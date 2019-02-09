@@ -12,6 +12,12 @@ namespace Terraria3D
 
 		public void Add(string tileName, Layer3D layer)
 		{
+			if(tileName.Equals("SolidTopTiles"))
+			{
+				SolidTopTilesLayer = layer;
+				return;
+			}
+
 			var fieldInfo = typeof(TileID).GetField(tileName, BindingFlags.Public | BindingFlags.Static);
 			if (fieldInfo != null && fieldInfo.FieldType == typeof(ushort))
 			{

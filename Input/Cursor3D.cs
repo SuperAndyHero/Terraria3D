@@ -22,9 +22,9 @@ namespace Terraria3D
 
         public static Vector2 Get3DScreenPos(Camera camera, Vector2 mousePos, Matrix modelMatrix)
         {
-            var layers = Terraria3D.Instance.LayerManager.Layers;
+            var layers = Terraria3D.Instance.LayerManager.LayerConfig.Layers;
             var solidLayer = layers.FirstOrDefault(l => l.InputPlane == Layer3D.InputPlaneType.SolidTiles);
-            var nonSolidLayer = layers.FirstOrDefault(l => l.InputPlane == Layer3D.InputPlaneType.NoneSolidTiles);
+            var nonSolidLayer = layers.FirstOrDefault(l => l.InputPlane == Layer3D.InputPlaneType.NonSolidTiles);
 
             if (solidLayer == null || nonSolidLayer == null)
                 return Vector2.Zero;
