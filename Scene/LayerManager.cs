@@ -12,7 +12,13 @@
 
         public void Rebuild()
         {
-            LayerBuilder.PopulateLayers(ref _layers);
+			if (_layers != null)
+			{
+				foreach (var layer in _layers)
+					layer?.Dispose();
+			}
+			_layers = LayerConfigImporter.GetDefaultLayers();
+            //LayerBuilder.PopulateLayers(ref _layers);
         }
 
         public void Dispose()

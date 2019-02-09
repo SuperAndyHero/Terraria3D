@@ -46,6 +46,7 @@
     <Compile Include="Hooks\WaterHooks.cs" />
     <Compile Include="Input\Cursor3D.cs" />
     <Compile Include="Input\InputTerraria3D.cs" />
+    <Compile Include="LayerConfigImporting\RenderFunctionMap.cs" />
     <Compile Include="Rendering\CapRenderer.cs" />
     <Compile Include="Geometry\PixelGrid.cs" />
     <Compile Include="Geometry\Quad.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Scene\LayerManager.cs" />
     <Compile Include="Scene\LayersBuilder.cs" />
     <Compile Include="Scene\Scene3D.cs" />
+    <Compile Include="Scene\TileOverrides.cs" />
     <Compile Include="Terraria3D.cs" />
     <Compile Include="UI\Elements\UILayerEntry.cs" />
     <Compile Include="UI\Elements\UIListModifiedScrollAmount.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="UI\UserInterfaces\GenericUserInterface.cs" />
     <Compile Include="UI\UserInterfaces\UserInterfaceOverlay.cs" />
     <Compile Include="UI\UserInterfaces\UserInterfaceSettings.cs" />
+    <Compile Include="LayerConfigImporting\LayerConfigImporter.cs" />
     <Compile Include="Utils\Loading.cs" />
     <Compile Include="Utils\Utils.cs" />
   </ItemGroup>
