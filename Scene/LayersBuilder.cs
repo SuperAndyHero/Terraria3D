@@ -47,7 +47,6 @@ namespace Terraria3D
                     {
                         Rendering.DrawNonSolidTiles();
                         Rendering.DrawWaterFalls();
-
                     }
                 },
                 //Player
@@ -85,6 +84,8 @@ namespace Terraria3D
                         Rendering.DrawInfernoRings();
                         Rendering.DrawProjsOverWireUI();
                         Rendering.DrawNPCProjectiles();
+
+                        Rendering.DrawSLRMoonlord();
                     }
                 },
                 // Items Gore

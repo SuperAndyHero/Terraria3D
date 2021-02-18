@@ -4,5 +4,6 @@ displayName = Terraria3D
 includePDB = false
 languageVersion = 6
 side = Client
+dllReferences = StarlightRiver_v0.1
 homepage = https://github.com/chatrat12/Terraria3D
 buildIgnore = README.md, LICENSE, packages/*, properties/*, .gitattributes, .gitignore, .git/, .vs/, .idea/, bin/, obj/, lib/*, Effects/Compiler/*, Thumbs.db, *.csproj, *.fx, *.config, *.user

@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using StarlightRiver.Content.CustomHooks;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Terraria;
 using Terraria.ModLoader;
@@ -38,6 +41,10 @@ namespace Terraria3D
         private static MethodInfo _modifyInterfaceLayers = typeof(Mod).Assembly.GetType("Terraria.ModLoader.ModHooks")
                 .GetMethod("ModifyInterfaceLayers", BindingFlags.NonPublic | BindingFlags.Static);
 
+        private static Type drawUnderMoonlordType = typeof(HookGroup).Assembly.GetType("StarlightRiver.Content.CustomHooks.DrawUnderMoonlord");
+
+        private static MethodInfo _drawSLRMoonlord = drawUnderMoonlordType.GetMethod("EmitMoonlordLayerDel", BindingFlags.NonPublic | BindingFlags.Instance);
+
         public static GraphicsProfile CurrentGraphicsProfile => (GraphicsProfile)_currentGraphicsProfile.GetValue(null);
         public static List<GameInterfaceLayer> GameInterfaceLayers => (List<GameInterfaceLayer>)_gameInterfaceLayers.GetValue(Main.instance);
 
@@ -65,6 +72,10 @@ namespace Terraria3D
         public static void DrawWires() => _drawWires.Invoke(Main.instance, null);
 
         public static void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) => _modifyInterfaceLayers.Invoke(null, new object[] { layers });
+
+        private static object objML = Activator.CreateInstance(drawUnderMoonlordType);
+
+        public static void DrawSLRMoonlord() => _drawSLRMoonlord.Invoke(objML, null);
 
         private static FieldInfo GetField(string fieldName, BindingFlags bindingFlags)
              => typeof(Main).GetField(fieldName, BindingFlags.NonPublic | bindingFlags);

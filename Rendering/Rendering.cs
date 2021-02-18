@@ -389,6 +389,8 @@ namespace Terraria3D
             using (_sb.End())
                 WorldHooks.PostDrawTiles();
         }
+
+        public static void DrawSLRMoonlord() => Reflection.DrawSLRMoonlord();
     }
 
     class SB : IDisposable
