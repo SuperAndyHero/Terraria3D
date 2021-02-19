@@ -2,7 +2,7 @@
 
 namespace Terraria3D
 {
-    public class Transfrom
+    public class Transform
     {
         public Vector3 Position    { get; set; } = Vector3.Zero;
         public Quaternion Rotation { get; set; } = Quaternion.Identity;

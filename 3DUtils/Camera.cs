@@ -5,7 +5,7 @@ namespace Terraria3D
 {
     public class Camera
     {
-        public Transfrom Transform { get; private set; } = new Transfrom();
+        public Transform Transform { get; private set; } = new Transform();
         public float FieldOfView { get; set; } = 60;
         public float NearClipPlane { get; set; } = 0.001f;
         public float FarClipPlane { get; set; } = 200f;

@@ -7,6 +7,7 @@
             var mode = Reflection.CurrentGraphicsProfile;
             Renderers.Load();
             instance.Scene = new Scene3D();
+            instance.VrHandler = new VrHandler();
             instance.LayerManager = new LayerManager();
             UITerraria3D.Load();
             Hooks.Initialize();
@@ -17,6 +18,7 @@
         {
             UITerraria3D.Unload();
             instance.Scene = null;
+            instance.VrHandler = null;//TODO make this actually unload
             instance.LayerManager?.Dispose();
             instance.LayerManager = null;
             Renderers.Unload();

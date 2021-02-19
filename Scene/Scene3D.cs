@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
 using Terraria;
 
@@ -7,9 +8,11 @@ namespace Terraria3D
     public class Scene3D
     {
         public Camera Camera { get; private set; } = new Camera();
-		public CameraDriver CameraDriver { get; private set; }
+        public Camera LeftEyeCamera { get; private set; } = new Camera();
+        public Camera RightEyeCamera { get; private set; } = new Camera();
+        public CameraDriver CameraDriver { get; private set; }
 		public DollyController DollyController { get; private set; }
-        public Transfrom ModelTransform { get; private set; } = new Transfrom();
+        public Transform ModelTransform { get; private set; } = new Transform();
         public bool AmbientOcclusion { get; set; } = true;
 		public Camera ActiveCamera => DollyController.DollyInProgress ? DollyController.TransitionCamera : Camera;
 
@@ -52,7 +55,6 @@ namespace Terraria3D
             foreach (var layer in layers)
                 layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
         }
-
         private void DrawCaps(Layer3D[] layers)
         {
             foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
@@ -61,11 +63,60 @@ namespace Terraria3D
 
         private void DrawExtrusionAndCap(Layer3D[] layers)
         {
-            foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
+            if (Terraria3D.VrRendering)
             {
-                layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
-                layer.DrawCap(ActiveCamera, _capMatrix);
+                VrHandler handler = Terraria3D.Instance.VrHandler;
+
+                                                                    //make this a variable
+                Matrix translate = Matrix.CreateTranslation(new Vector3(0, 5, -30)) * Matrix.CreateScale(0.1f);
+
+                Matrix leftEyeViewFinal = Matrix.Invert(handler.leftEyeView * handler.Hmd.DeviceMatrix) * Matrix.CreateScale(1, -1, 1);
+                Matrix rightEyeViewFinal = Matrix.Invert(handler.rightEyeView * handler.Hmd.DeviceMatrix) * Matrix.CreateScale(1, -1, 1);
+
+                //make new camera here
+                //make new camera here x2
+
+                Main.graphics.GraphicsDevice.SetRenderTarget(handler.leftEyeTarget);
+
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
+                Main.spriteBatch.Draw(Main.screenTarget, new Rectangle(0, 0, handler.leftEyeTarget.Width, handler.leftEyeTarget.Height), Color.White);
+                Main.spriteBatch.End();
+
+                foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
+                {
+                                                      //todo Try false
+                    layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
+                    layer.DrawCap(ActiveCamera, _capMatrix);
+                }
+
+                Main.graphics.GraphicsDevice.SetRenderTarget(null);
+
+
+
+                Main.graphics.GraphicsDevice.SetRenderTarget(handler.rightEyeTarget);
+
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
+                Main.spriteBatch.Draw(Main.screenTarget, new Rectangle(0, 0, handler.rightEyeTarget.Width, handler.rightEyeTarget.Height), Color.White);
+                Main.spriteBatch.End();
+
+                foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
+                {
+                                                      //todo Try false
+                    layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
+                    layer.DrawCap(ActiveCamera, _capMatrix);
+                }
+
+                Main.graphics.GraphicsDevice.SetRenderTarget(null);
+
+
+                handler.Draw();
             }
+            else
+                foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
+                {
+                    layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
+                    layer.DrawCap(ActiveCamera, _capMatrix);
+                }
         }
 
         private Matrix _extrusionMatrix

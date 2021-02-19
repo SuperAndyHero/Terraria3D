@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using Valve.VR;
 
 namespace Terraria3D
 {
@@ -62,5 +63,19 @@ namespace Terraria3D
             quaternion.W = (m01 - m10) * num2;
             return quaternion;
         }
+
+        public static Matrix ToMatrix(this HmdMatrix44_t mat) =>
+            new Matrix(
+        mat.m0, mat.m4, mat.m8, mat.m12,
+        mat.m1, mat.m5, mat.m9, mat.m13,
+        mat.m2, mat.m6, mat.m10, mat.m14,
+        mat.m3, mat.m7, mat.m11, mat.m15);
+
+        public static Matrix ToMatrix(this HmdMatrix34_t mat) =>
+            new Matrix(
+        mat.m0, mat.m4, mat.m8, 0.0f,
+        mat.m1, mat.m5, mat.m9, 0.0f,
+        mat.m2, mat.m6, mat.m10, 0.0f,
+        mat.m3, mat.m7, mat.m11, 1.0f);
     }
 }

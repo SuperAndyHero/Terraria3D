@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
@@ -13,9 +15,12 @@ namespace Terraria3D
     public class Terraria3D : Mod
     {
         public static bool Enabled { get; set; } = true;
-        public static Terraria3D Instance { get; private set; }
+		public static bool VrEnabled { get; set; } = true;
+		public static bool VrRendering => VrEnabled && Instance.VrHandler.HMDConnected && Instance.VrHandler.VrInitalized;
+		public static Terraria3D Instance { get; private set; }
         public Scene3D Scene { get; set; }
-        public LayerManager LayerManager { get; set; }
+		public VrHandler VrHandler { get; set; }
+		public LayerManager LayerManager { get; set; }
 
 		public async void Toggle()
 		{
@@ -33,7 +38,30 @@ namespace Terraria3D
 
 		}
 
-		public override void Load()
+		//Main.screenTarget background
+		//public override void MidUpdateTimeWorld()
+  //      {
+		//	Main.graphics.GraphicsDevice.SetRenderTarget(a);
+
+		//	Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
+		//	Main.spriteBatch.Draw(Main.screenTarget, new Rectangle(0, 0, a.Width, a.Height), Color.White);
+		//	Main.spriteBatch.End();
+
+		//	Instance.DrawScene();
+
+		//	Main.graphics.GraphicsDevice.SetRenderTarget(null);
+		//}
+
+  //      RenderTarget2D a = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+		
+		public override void PostDrawInterface(SpriteBatch spriteBatch)
+        {
+			spriteBatch.Draw(VrHandler.leftEyeTarget, new Rectangle(0, Main.screenHeight / 2, Main.screenWidth / 2, Main.screenHeight / 2), Color.White);
+			spriteBatch.Draw(VrHandler.rightEyeTarget, new Rectangle(Main.screenWidth / 2, Main.screenHeight / 2, Main.screenWidth / 2, Main.screenHeight / 2), Color.White);
+			base.PostDrawInterface(spriteBatch);
+        }
+
+        public override void Load()
         {
 			if (Main.dedServ) return;
             Instance = this;
