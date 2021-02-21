@@ -14,16 +14,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="lib\**" />
-    <EmbeddedResource Remove="lib\**" />
-    <None Remove="lib\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="OpenVRApiModule">
       <HintPath>VRUtils\OpenVRApiModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Update="lib\OpenVRApiModule.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\openvr_api.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="VRUtils\OpenVRApiModule.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

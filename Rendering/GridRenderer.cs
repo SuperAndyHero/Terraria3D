@@ -41,20 +41,23 @@ namespace Terraria3D
 			_gridBuffer.SetData(_grid);
 		}
 
-		public void Draw(Texture2D texture, Camera camera, float depth, float noiseAmount = 1, bool ao = true, Matrix? modelMatrix = null)
+		public void Draw(Texture2D texture, Camera camera, float depth, float noiseAmount = 1, bool ao = true, Matrix? modelMatrix = null) =>
+			Draw(texture, camera.View, camera.Projection, depth, noiseAmount, ao, modelMatrix);
+
+		public void Draw(Texture2D texture, Matrix view, Matrix projection, float depth, float noiseAmount = 1, bool ao = true, Matrix? modelMatrix = null)
 		{
 			if (modelMatrix == null)
 				modelMatrix = Matrix.Identity;
 
 
-			_effect.Parameters["View"].SetValue(camera.View);
-			_effect.Parameters["Projection"].SetValue(camera.Projection);
+			_effect.Parameters["View"].SetValue(view);
+			_effect.Parameters["Projection"].SetValue(projection);
 			_effect.Parameters["_MainTex"].SetValue(texture);
 			_effect.Parameters["PixelOffset"].SetValue(new Vector2(1f / texture.Width, 1f / texture.Height));
 			_effect.Parameters["World"].SetValue(modelMatrix.Value);
 			_effect.Parameters["Depth"].SetValue(depth);
 			_effect.Parameters["NoiseAmount"].SetValue(noiseAmount);
-            _effect.Parameters["CameraPosition"].SetValue(new Vector2(-Main.screenPosition.X, Main.screenPosition.Y + 1));
+			_effect.Parameters["CameraPosition"].SetValue(new Vector2(-Main.screenPosition.X, Main.screenPosition.Y + 1));
 			if (Renderers.SM3Enabled)
 				_effect.Parameters["AO"].SetValue(ao);
 

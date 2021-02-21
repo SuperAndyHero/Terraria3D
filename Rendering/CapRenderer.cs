@@ -24,14 +24,17 @@ namespace Terraria3D
             _buffer?.Dispose();
         }
 
-        public void Draw(Texture texture, Camera camera,  Matrix matrix)
+        public void Draw(Texture texture, Camera camera,  Matrix worldMatrix) =>
+            Draw(texture, camera.View, camera.Projection, worldMatrix);
+
+        public void Draw(Texture texture, Matrix view, Matrix projection, Matrix worldMatrix)
         {
-            _effect.Parameters["World"].SetValue(matrix);
-            _effect.Parameters["View"].SetValue(camera.View);
-            _effect.Parameters["Projection"].SetValue(camera.Projection);
+            _effect.Parameters["World"].SetValue(worldMatrix);
+            _effect.Parameters["View"].SetValue(view);
+            _effect.Parameters["Projection"].SetValue(projection);
             _effect.Parameters["_MainTex"].SetValue(texture);
 
-            foreach(var pass in _effect.CurrentTechnique.Passes)
+            foreach (var pass in _effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
                 _graphicsDevice.SetVertexBuffer(_buffer);

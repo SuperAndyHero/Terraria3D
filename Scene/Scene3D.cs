@@ -8,8 +8,6 @@ namespace Terraria3D
     public class Scene3D
     {
         public Camera Camera { get; private set; } = new Camera();
-        public Camera LeftEyeCamera { get; private set; } = new Camera();
-        public Camera RightEyeCamera { get; private set; } = new Camera();
         public CameraDriver CameraDriver { get; private set; }
 		public DollyController DollyController { get; private set; }
         public Transform ModelTransform { get; private set; } = new Transform();
@@ -46,8 +44,13 @@ namespace Terraria3D
 
         public void DrawToScreen(Layer3D[] layers)
         {
-            if (!Terraria3D.Enabled || _canSkipDrawing) return;
-            DrawExtrusionAndCap(layers);
+            if (!Terraria3D.Enabled || _canSkipDrawing) 
+                return;
+
+            if (Terraria3D.VrRendering)
+                DrawExtrusionAndCapVR(layers);
+            else
+                DrawExtrusionAndCap(layers);
         }
 
         private void DrawExtrusions(Layer3D[] layers)
@@ -61,62 +64,65 @@ namespace Terraria3D
                 layer.DrawCap(ActiveCamera, _capMatrix);
         }
 
+        private void DrawExtrusionAndCapVR(Layer3D[] layers)
+        {
+            VrHandler handler = Terraria3D.Instance.VrHandler;
+
+            handler.PreDraw();
+
+                                                        //make this a variable
+            //Matrix translate = Matrix.CreateTranslation(new Vector3(0, 5, -30)) * Matrix.CreateScale(0.1f);
+
+            Matrix leftEyeViewFinal = Matrix.Invert(handler.leftEyeView * handler.Hmd.DeviceMatrix) * Matrix.CreateScale(1, -1, 1);
+            Matrix rightEyeViewFinal = Matrix.Invert(handler.rightEyeView * handler.Hmd.DeviceMatrix) * Matrix.CreateScale(1, -1, 1);
+
+
+            //gui isnt drawn
+
+            #region left eye
+            Main.graphics.GraphicsDevice.SetRenderTarget(handler.leftEyeTarget);
+
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
+            Main.spriteBatch.Draw(Main.screenTarget, new Rectangle(0, 0, handler.leftEyeTarget.Width, handler.leftEyeTarget.Height), Color.White);
+            Main.spriteBatch.End();
+            foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
+            {
+                //todo Try false
+                layer.DrawExtrusion(leftEyeViewFinal, handler.leftEyeProjection, AmbientOcclusion, _extrusionMatrix);
+                layer.DrawCap(leftEyeViewFinal, handler.leftEyeProjection, _capMatrix);
+            }
+
+            Main.graphics.GraphicsDevice.SetRenderTarget(null);
+            #endregion
+
+
+
+            #region right eye
+            Main.graphics.GraphicsDevice.SetRenderTarget(handler.rightEyeTarget);
+
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
+            Main.spriteBatch.Draw(Main.screenTarget, new Rectangle(0, 0, handler.rightEyeTarget.Width, handler.rightEyeTarget.Height), Color.White);
+            Main.spriteBatch.End();
+            foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
+            {
+                //todo Try false
+                layer.DrawExtrusion(rightEyeViewFinal, handler.rightEyeProjection, AmbientOcclusion, _extrusionMatrix);
+                layer.DrawCap(rightEyeViewFinal, handler.rightEyeProjection, _capMatrix);
+            }
+
+            Main.graphics.GraphicsDevice.SetRenderTarget(null);
+            #endregion
+
+            handler.PostDraw();
+        }
+
         private void DrawExtrusionAndCap(Layer3D[] layers)
         {
-            if (Terraria3D.VrRendering)
+            foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
             {
-                VrHandler handler = Terraria3D.Instance.VrHandler;
-
-                                                                    //make this a variable
-                Matrix translate = Matrix.CreateTranslation(new Vector3(0, 5, -30)) * Matrix.CreateScale(0.1f);
-
-                Matrix leftEyeViewFinal = Matrix.Invert(handler.leftEyeView * handler.Hmd.DeviceMatrix) * Matrix.CreateScale(1, -1, 1);
-                Matrix rightEyeViewFinal = Matrix.Invert(handler.rightEyeView * handler.Hmd.DeviceMatrix) * Matrix.CreateScale(1, -1, 1);
-
-                //make new camera here
-                //make new camera here x2
-
-                Main.graphics.GraphicsDevice.SetRenderTarget(handler.leftEyeTarget);
-
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
-                Main.spriteBatch.Draw(Main.screenTarget, new Rectangle(0, 0, handler.leftEyeTarget.Width, handler.leftEyeTarget.Height), Color.White);
-                Main.spriteBatch.End();
-
-                foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
-                {
-                                                      //todo Try false
-                    layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
-                    layer.DrawCap(ActiveCamera, _capMatrix);
-                }
-
-                Main.graphics.GraphicsDevice.SetRenderTarget(null);
-
-
-
-                Main.graphics.GraphicsDevice.SetRenderTarget(handler.rightEyeTarget);
-
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
-                Main.spriteBatch.Draw(Main.screenTarget, new Rectangle(0, 0, handler.rightEyeTarget.Width, handler.rightEyeTarget.Height), Color.White);
-                Main.spriteBatch.End();
-
-                foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
-                {
-                                                      //todo Try false
-                    layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
-                    layer.DrawCap(ActiveCamera, _capMatrix);
-                }
-
-                Main.graphics.GraphicsDevice.SetRenderTarget(null);
-
-
-                handler.Draw();
+                layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
+                layer.DrawCap(ActiveCamera, _capMatrix);
             }
-            else
-                foreach (var layer in layers.OrderBy(l => l.Depth - l.ZPos))
-                {
-                    layer.DrawExtrusion(ActiveCamera, AmbientOcclusion, _extrusionMatrix);
-                    layer.DrawCap(ActiveCamera, _capMatrix);
-                }
         }
 
         private Matrix _extrusionMatrix

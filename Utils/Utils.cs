@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Terraria;
 
 namespace Terraria3D

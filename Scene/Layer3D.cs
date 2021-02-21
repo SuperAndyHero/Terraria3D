@@ -46,6 +46,19 @@ namespace Terraria3D
             _innerPixelTarget?.Dispose();
         }
 
+        public void DrawExtrusion(Matrix view, Matrix projection, bool ao, Matrix worldMatrix)
+        {
+            if (!Enabled) return;
+            worldMatrix = Matrix.CreateScale(1, 1, Depth) * Matrix.CreateTranslation(0, 0, Depth - ZPos) * worldMatrix;
+            Renderers.GridRenderer.Draw(UseInnerPixel ? _innerPixelTarget : _renderTarget, view, projection, Depth, NoiseAmount, ao, worldMatrix);
+        }
+        public void DrawCap(Matrix view, Matrix projection, Matrix worldMatrix)
+        {
+            if (!Enabled) return;
+            worldMatrix = Matrix.CreateTranslation(0, 0, Depth - ZPos) * worldMatrix;
+            Renderers.CapRenderer.Draw(_renderTarget, view, projection, worldMatrix);
+        }
+
         public void DrawExtrusion(Camera camera, bool ao, Matrix worldMatrix)
         {
             if (!Enabled) return;

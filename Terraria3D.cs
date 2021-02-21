@@ -2,8 +2,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
@@ -56,13 +58,31 @@ namespace Terraria3D
 		
 		public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
-			spriteBatch.Draw(VrHandler.leftEyeTarget, new Rectangle(0, Main.screenHeight / 2, Main.screenWidth / 2, Main.screenHeight / 2), Color.White);
-			spriteBatch.Draw(VrHandler.rightEyeTarget, new Rectangle(Main.screenWidth / 2, Main.screenHeight / 2, Main.screenWidth / 2, Main.screenHeight / 2), Color.White);
+			if (VrRendering)
+            {
+				spriteBatch.Draw(VrHandler.leftEyeTarget, new Rectangle(0, Main.screenHeight / 2, Main.screenWidth / 2, Main.screenHeight / 2), Color.White);
+				spriteBatch.Draw(VrHandler.rightEyeTarget, new Rectangle(Main.screenWidth / 2, Main.screenHeight / 2, Main.screenWidth / 2, Main.screenHeight / 2), Color.White);
+			}
 			base.PostDrawInterface(spriteBatch);
         }
 
-        public override void Load()
+		
+
+		public override void Load()
         {
+			//for (int i = 0; i < 3; i++)
+			//{
+			//	Debug.WriteLine("DEBUG1234");
+			//}
+
+			//FieldInfo[] fieldInfos = typeof(RenderTarget2D).GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+			//Debug.WriteLine("TERRARIA 3D DEBUG");
+			//Debug.WriteLine(fieldInfos.Length);
+			//foreach (FieldInfo info in fieldInfos)
+			//{
+			//	Debug.WriteLine(info.ToString());
+			//}
+
 			if (Main.dedServ) return;
             Instance = this;
             Enabled = true;

@@ -11,7 +11,6 @@ using System.Reflection;
 using Valve.VR;
 using System.Text;
 using Terraria;
-using Terraria3D;
 
 namespace Terraria3D
 {
@@ -19,7 +18,7 @@ namespace Terraria3D
     {
         public bool HMDConnected = false;
         public bool VrInitalized = false;
-
+        
         public CVRSystem cvrsystem;
         public CVRCompositor compositor;
 
@@ -66,7 +65,7 @@ namespace Terraria3D
         }
 
 
-        public void Initalize()//called only once
+        public VrHandler()//called only once
         {
             if (Terraria3D.VrEnabled)//doesn't initalize this if the game starts with vr mode disabled
             {
@@ -89,8 +88,6 @@ namespace Terraria3D
             }
 
             HMDConnected = true;
-
-
 
 
 
@@ -127,12 +124,19 @@ namespace Terraria3D
             VrInitalized = true;
         }
 
-        private void InitVisual()
+        private IntPtr colorPtr;
+
+        private unsafe void InitVisual()
         {
             cvrsystem.GetRecommendedRenderTargetSize(ref viewWidth, ref viewHeight);
 
             leftEyeTarget = new RenderTarget2D(GraphicsDevice, (int)viewWidth, (int)viewHeight, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
             rightEyeTarget = new RenderTarget2D(GraphicsDevice, (int)viewWidth, (int)viewHeight, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+
+            //imageData = new Color[(int)viewWidth * (int)viewHeight];
+
+            //GCHandle handle1 = GCHandle.Alloc(imageData);
+            //colorPtr = (IntPtr)handle1;
 
             compositor = OpenVR.Compositor;
             compositor.CompositorBringToFront();
@@ -141,24 +145,42 @@ namespace Terraria3D
             UpdatePoses();
             UpdateMatrix();
 
+            //FieldInfo pComPtr = typeof(Texture2D).GetField("pComPtr", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            FieldInfo fieldInfo = typeof(Texture2D).GetField("glTexture", BindingFlags.Instance | BindingFlags.NonPublic);
+            /* tex2D fields
+            Int32 _width
+            Int32 _height
+            Boolean _shouldNotRecreate
+            IntPtr[] pFaceData
+            IDirect3DTexture9* pComPtr //most likely of possible use?
+            Microsoft.Xna.Framework.Graphics.SurfaceFormat _format
+            Int32 _levelCount
+            Boolean alreadyRecreated
+            Boolean isActiveRenderTarget
+            Boolean renderTargetContentsDirty
+            Microsoft.Xna.Framework.Graphics.StateTrackerTexture* pStateTracker
+            Microsoft.Xna.Framework.Graphics.GraphicsDevice _parent
+            UInt64 _internalHandle //of possible use?
+            Boolean isDisposed
+             */
+
 
             //left eye
             leftEyeTexture = new Texture_t()
             {
-                handle = new IntPtr((int)fieldInfo.GetValue(leftEyeTarget)),
-                eType = ETextureType.OpenGL,
+                handle = colorPtr,
+                eType = ETextureType.DirectX,
                 eColorSpace = EColorSpace.Auto
             };
 
             //right eye
             rightEyeTexture = new Texture_t()
             {
-                handle = new IntPtr((int)fieldInfo.GetValue(rightEyeTarget)),
-                eType = ETextureType.OpenGL,
+                handle = colorPtr,
+                eType = ETextureType.DirectX,
                 eColorSpace = EColorSpace.Auto
             };
+
 
             compositor.FadeGrid(5.0f, false);//fade from the steamVR void to the gameview
         }
@@ -175,21 +197,17 @@ namespace Terraria3D
             trackers.RemoveAll(c => c.DeviceIndex == device);
         #endregion
 
-        public void Draw()
+
+        public void PreDraw()
         {
-            if (Terraria3D.VrRendering)
-            {
-                PollEvents();
-                UpdatePoses();
-                UpdateMatrix();
+            PollEvents();
+            UpdatePoses();
+            UpdateMatrix();
+        }
 
-                //GameMain.Instance.DrawGeometry(leftEyeProjection, leftEyeViewFinal, translate, leftEyeTarget);
-                //GameMain.Instance.DrawGeometry(rightEyeProjection, rightEyeViewFinal, translate, rightEyeTarget);
-
-                GraphicsDevice.SetRenderTarget(null);
-
-                SendFrameToHMD();
-            }
+        public void PostDraw()
+        {
+            SendFrameToHMD();
         }
 
         private unsafe void PollEvents()
@@ -270,6 +288,7 @@ namespace Terraria3D
             rightEyeView = cvrsystem.GetEyeToHeadTransform(EVREye.Eye_Right).ToMatrix();
         }
 
+        //todo move to init
         private VRTextureBounds_t texBounds = new VRTextureBounds_t
         {
             uMin = 0,
