@@ -126,6 +126,8 @@ namespace Terraria3D
 
         private IntPtr colorPtr;
 
+        byte[] imageData;
+
         private unsafe void InitVisual()
         {
             cvrsystem.GetRecommendedRenderTargetSize(ref viewWidth, ref viewHeight);
@@ -133,10 +135,12 @@ namespace Terraria3D
             leftEyeTarget = new RenderTarget2D(GraphicsDevice, (int)viewWidth, (int)viewHeight, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
             rightEyeTarget = new RenderTarget2D(GraphicsDevice, (int)viewWidth, (int)viewHeight, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
 
+            imageData = new byte[(int)viewWidth * (int)viewHeight * 4];
+
             //imageData = new Color[(int)viewWidth * (int)viewHeight];
 
-            //GCHandle handle1 = GCHandle.Alloc(imageData);
-            //colorPtr = (IntPtr)handle1;
+            GCHandle handle1 = GCHandle.Alloc(imageData);
+            colorPtr = (IntPtr)handle1;
 
             compositor = OpenVR.Compositor;
             compositor.CompositorBringToFront();
@@ -207,6 +211,8 @@ namespace Terraria3D
 
         public void PostDraw()
         {
+            leftEyeTarget.GetData(imageData);
+
             SendFrameToHMD();
         }
 
